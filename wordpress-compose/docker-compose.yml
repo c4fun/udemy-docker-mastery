@@ -1,6 +1,14 @@
 version: '2'
 
 services:
+  proxy:
+    image: nginx:1.15
+    links:
+      - 'wordpress'
+    ports:
+      - '80:80' # expose 80 on host and sent to 80 in container
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
   wordpress:
     build: .
@@ -11,18 +19,18 @@ services:
     environment:
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DB_USER: example
-      WORDPRESS_DB_PASSWORD: examplePW
+      WORDPRESS_DB_USER: /run/secrets/mysql_wordpress_user
+      WORDPRESS_DB_PASSWORD: /run/secrets/mysql_pass
     volumes:
       - wordpress-data:/var/www/html
 
   mysql:
     image: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: examplerootPW
+      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_pass
       MYSQL_DATABASE: wordpress
-      MYSQL_USER: example
-      MYSQL_PASSWORD: examplePW
+      MYSQL_USER: /run/secrets/mysql_wordpress_user
+      MYSQL_PASSWORD: /run/secrets/mysql_pass
     volumes:
       - mysql-data:/var/lib/mysql
 
