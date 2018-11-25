@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  proxy:
+    image: nginx:1.15
+    ports:
+      - '80:80' 
+    volumes:
+      - nginx-conf:/etc/nginx
+    networks:
+      - wordpress-net
+
+volumes:
+  nginx-conf:
+
+networks:
+  wordpress-net:
+    external: true
