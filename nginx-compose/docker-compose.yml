@@ -6,12 +6,9 @@ services:
     ports:
       - '80:80' 
     volumes:
-      - nginx-conf:/etc/nginx
+      - ./conf/:/etc/nginx
     networks:
       - wordpress-net
-
-volumes:
-  nginx-conf:
 
 networks:
   wordpress-net:
