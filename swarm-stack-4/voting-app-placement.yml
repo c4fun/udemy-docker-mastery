@@ -5,7 +5,7 @@
 # worker needs to scale with Swarm worker nodes, 1 task each
 # docker node update --label-add=ssd=true docker-1
 
-version: '3'
+version: '3.3'
 services:
     redis:
         image: redis:alpine
