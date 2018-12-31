@@ -29,8 +29,8 @@ services:
             - '5000:80'
         networks:
             - frontend
-        replicas: 2
         deploy:
+            replicas: 2
             placement:
                 constraints:
                     - node.role != manager
