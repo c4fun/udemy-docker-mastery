@@ -3,6 +3,7 @@
 # vote should be HA with 2 replicas
 # vote must not run on Swarm manager nodes
 # worker needs to scale with Swarm worker nodes, 1 task each
+# docker node update --label-add=ssd=true docker-1
 
 version: '3'
 services:
@@ -11,17 +12,30 @@ services:
         networks:
             - frontend
     db:
+    # docker service create --constraint=node.labels.ssd==true --name db postgres:9.6
         image: postgres:9.6
         volumes:
             - db-data:/var/lib/postgresql/data
         networks:
             - backend
+        deploy:
+            placement:
+                constraints:
+                    - node.labels.ssd == true
     vote:
+    # docker service create --constraint=node.role!=manager --replicas 2 --placement-pref spread=node.role.worker --name vote bretfisher/examplevotingapp_vote
         image: bretfisher/examplevotingapp_vote
         ports:
             - '5000:80'
         networks:
             - frontend
+        replicas: 2
+        deploy:
+            placement:
+                constraints:
+                    - node.role != manager
+                preferences:
+                    - spread: node.role.worker
     result:
         image: bretfisher/examplevotingapp_result
         ports:
@@ -29,10 +43,16 @@ services:
         networks:
             - backend
     worker:
+    # docker service create --constraint=node.role==worker --mode=global --name worker bretfisher/examplevotingapp_worker:java
         image: bretfisher/examplevotingapp_worker:java
         networks:
             - frontend
             - backend
+        deploy:
+            mode: global
+            placement:
+                constraints:
+                    - node.role == worker
 networks:
     frontend: null
     backend: null
